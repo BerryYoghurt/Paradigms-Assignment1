@@ -1,0 +1,65 @@
+PARSER_BEGIN(TinyLanguage)
+
+public class TinyLanguage {
+    public static void main(String[] args){
+        TinyLanguage parser = new TinyLanguage(System.in);
+        parser.Com();
+    }
+}
+PARSER_END(TinyLanguage)
+
+SKIP : {
+    " "|"\n"|"\r"
+}
+
+TOKEN : {
+    <#DIGIT:["0"-"9"]>
+    |<#LETTER:["a"-"f"]>
+    |<NUM:(<DIGIT>)+>
+    |<VAR:(<LETTER>)+>
+    |<TRUE:"tt">
+    |<FALSE:"ff">
+    |<PLUS:"+">
+    |<MINUS:"-">
+    |<IF:"if">
+    |<THEN:"then">
+    |<ELSE:"else">
+    |<EQUALS:"==">
+    |<NOT:"!">
+    |<AND:"^">
+    |<ASSIGN:":=">
+    |<SEMICOLON:";">
+    |<WHILE:"while">
+    |<DO:"do">
+    |<SK:"skip">
+    |<OPPAR:"(">
+    |<CLOSPAR:")">
+}
+
+void Com():
+{}
+{
+    (<SK>
+    |<VAR><ASSIGN>AEXP()
+    |<IF>BEXP()<THEN>Com()<ELSE>Com()
+    |<WHILE>BEXP()<DO>Com())
+    [<SEMICOLON>Com()]<EOF>
+}
+
+
+void AEXP():
+{}
+{
+    <NUM>
+    |<VAR>
+    |<OPPAR>AEXP()<PLUS>AEXP()<CLOSPAR>
+    |<OPPAR>AEXP()<MINUS>AEXP()<CLOSPAR>
+}
+
+void BEXP():
+{}
+{
+    <TRUE>
+    |<FALSE>
+    |<OPPAR>
+}

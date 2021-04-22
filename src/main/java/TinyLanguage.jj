@@ -41,11 +41,28 @@ TOKEN : {
 void Com():
 {}
 {
+    /*<SK>
+    |<VAR><ASSIGN>AEXP()
+    |<IF>BEXP()<THEN>Com()<ELSE>Com()
+    |<WHILE>BEXP()<DO>Com()
+    [<SEMICOLON>Com()]//<EOF>*/
+    SimpleCom()[<SEMICOLON>Com()]
+    |CompoundCom()
+}
+
+void SimpleCom():
+{}
+{
     <SK>
     |<VAR><ASSIGN>AEXP()
-    |<IF>BEXP()<THEN>Com()<ELSE>Com()<ENDIF>
-    |<WHILE>BEXP()<DO>Com()<ENDWHILE>
-    [<SEMICOLON>Com()]//<EOF>
+}
+
+void CompoundCom():
+{}
+{
+    (<IF>BEXP()<THEN>Com()<ELSE>
+        |<WHILE>BEXP()<DO>)
+    Com()
 }
 
 void AEXP():

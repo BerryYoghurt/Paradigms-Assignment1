@@ -1,7 +1,7 @@
 PARSER_BEGIN(TinyLanguage)
 
 public class TinyLanguage {
-    public static void main(String[] args){
+    public static void main(String[] args) throws ParseException{
         TinyLanguage parser = new TinyLanguage(System.in);
         parser.Com();
     }
@@ -16,9 +16,9 @@ TOKEN : {
     <#DIGIT:["0"-"9"]>
     |<#LETTER:["a"-"f"]>
     |<NUM:(<DIGIT>)+>
+    |<FALSE:"ff">
     |<VAR:(<LETTER>)+>
     |<TRUE:"tt">
-    |<FALSE:"ff">
     |<PLUS:"+">
     |<MINUS:"-">
     |<IF:"if">
@@ -31,6 +31,8 @@ TOKEN : {
     |<SEMICOLON:";">
     |<WHILE:"while">
     |<DO:"do">
+    |<ENDIF:"endif">
+    |<ENDWHILE:"endwhile">
     |<SK:"skip">
     |<OPPAR:"(">
     |<CLOSPAR:")">
@@ -39,21 +41,19 @@ TOKEN : {
 void Com():
 {}
 {
-    (<SK>
+    <SK>
     |<VAR><ASSIGN>AEXP()
-    |<IF>BEXP()<THEN>Com()<ELSE>Com()
-    |<WHILE>BEXP()<DO>Com())
-    [<SEMICOLON>Com()]<EOF>
+    |<IF>BEXP()<THEN>Com()<ELSE>Com()<ENDIF>
+    |<WHILE>BEXP()<DO>Com()<ENDWHILE>
+    [<SEMICOLON>Com()]//<EOF>
 }
-
 
 void AEXP():
 {}
 {
     <NUM>
     |<VAR>
-    |<OPPAR>AEXP()<PLUS>AEXP()<CLOSPAR>
-    |<OPPAR>AEXP()<MINUS>AEXP()<CLOSPAR>
+    |<OPPAR>AEXP()(<PLUS>|<MINUS>)AEXP()<CLOSPAR>
 }
 
 void BEXP():
@@ -61,5 +61,7 @@ void BEXP():
 {
     <TRUE>
     |<FALSE>
-    |<OPPAR>
+    |<OPPAR>(AEXP()<EQUALS>AEXP()
+            |BEXP()<AND>BEXP())<CLOSPAR>
+    |<NOT>BEXP()
 }

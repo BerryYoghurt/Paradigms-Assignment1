@@ -3,13 +3,14 @@ PARSER_BEGIN(TinyLanguage)
 public class TinyLanguage {
     public static void main(String[] args) throws ParseException{
         TinyLanguage parser = new TinyLanguage(System.in);
-        parser.Com();
+        parser.Prog();
     }
 }
 PARSER_END(TinyLanguage)
 
 SKIP : {
-    " "|"\n"|"\r"
+    " "/*|"\n"*/|"\r" //I've put \n in the end of Prog just for testing purpses
+    //feel free to uncomment it
 }
 
 TOKEN : {
@@ -36,6 +37,12 @@ TOKEN : {
     |<SK:"skip">
     |<OPPAR:"(">
     |<CLOSPAR:")">
+}
+
+void Prog():
+{}
+{
+    Com()("\n"|<EOF>)
 }
 
 void Com():
@@ -78,7 +85,12 @@ void BEXP():
 {
     <TRUE>
     |<FALSE>
-    |<OPPAR>(AEXP()<EQUALS>AEXP()
-            |BEXP()<AND>BEXP())<CLOSPAR>
+    |<OPPAR>//the following works good because BEXP is not a subset of AEXP. That is,
+        //if the next token is an AEXP then we can be sure (if the statement is
+        // syntactically correct) that no BEXP can come after
+            (LOOKAHEAD(AEXP()/*<EQUALS>AEXP()<CLOSPAR>(<THEN>|<WHILE>)*/)
+            AEXP()<EQUALS>AEXP()
+            |BEXP()<AND>BEXP())
+     <CLOSPAR>
     |<NOT>BEXP()
 }

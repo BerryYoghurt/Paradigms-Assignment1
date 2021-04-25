@@ -1,24 +1,25 @@
 PARSER_BEGIN(TinyLanguage)
 
 public class TinyLanguage {
-    public static void main(String[] args){
+    public static void main(String[] args) throws ParseException{
         TinyLanguage parser = new TinyLanguage(System.in);
-        parser.Com();
+        parser.Prog();
     }
 }
 PARSER_END(TinyLanguage)
 
 SKIP : {
-    " "|"\n"|"\r"
+    " "/*|"\n"*/|"\r" //I've put \n in the end of Prog just for testing purpses
+    //feel free to uncomment it
 }
 
 TOKEN : {
     <#DIGIT:["0"-"9"]>
     |<#LETTER:["a"-"f"]>
     |<NUM:(<DIGIT>)+>
+    |<FALSE:"ff">
     |<VAR:(<LETTER>)+>
     |<TRUE:"tt">
-    |<FALSE:"ff">
     |<PLUS:"+">
     |<MINUS:"-">
     |<IF:"if">
@@ -31,29 +32,52 @@ TOKEN : {
     |<SEMICOLON:";">
     |<WHILE:"while">
     |<DO:"do">
+    |<ENDIF:"endif">
+    |<ENDWHILE:"endwhile">
     |<SK:"skip">
     |<OPPAR:"(">
     |<CLOSPAR:")">
 }
 
+void Prog():
+{}
+{
+    Com()("\n"|<EOF>)
+}
+
 void Com():
 {}
 {
-    (<SK>
+    /*<SK>
     |<VAR><ASSIGN>AEXP()
     |<IF>BEXP()<THEN>Com()<ELSE>Com()
-    |<WHILE>BEXP()<DO>Com())
-    [<SEMICOLON>Com()]<EOF>
+    |<WHILE>BEXP()<DO>Com()
+    [<SEMICOLON>Com()]//<EOF>*/
+    SimpleCom()[<SEMICOLON>Com()]
+    |CompoundCom()
 }
 
+void SimpleCom():
+{}
+{
+    <SK>
+    |<VAR><ASSIGN>AEXP()
+}
+
+void CompoundCom():
+{}
+{
+    (<IF>BEXP()<THEN>Com()<ELSE>
+        |<WHILE>BEXP()<DO>)
+    Com()
+}
 
 void AEXP():
 {}
 {
     <NUM>
     |<VAR>
-    |<OPPAR>AEXP()<PLUS>AEXP()<CLOSPAR>
-    |<OPPAR>AEXP()<MINUS>AEXP()<CLOSPAR>
+    |<OPPAR>AEXP()(<PLUS>|<MINUS>)AEXP()<CLOSPAR>
 }
 
 void BEXP():
@@ -61,5 +85,12 @@ void BEXP():
 {
     <TRUE>
     |<FALSE>
-    |<OPPAR>
+    |<OPPAR>//the following works good because BEXP is not a subset of AEXP. That is,
+        //if the next token is an AEXP then we can be sure (if the statement is
+        // syntactically correct) that no BEXP can come after
+            (LOOKAHEAD(AEXP()/*<EQUALS>AEXP()<CLOSPAR>(<THEN>|<WHILE>)*/)
+            AEXP()<EQUALS>AEXP()
+            |BEXP()<AND>BEXP())
+     <CLOSPAR>
+    |<NOT>BEXP()
 }

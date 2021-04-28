@@ -1,9 +1,18 @@
 PARSER_BEGIN(TinyLanguage)
-
+import java.util.HashMap;
 public class TinyLanguage {
+    private static HashMap<String, Integer> variables = new HashMap<>();
     public static void main(String[] args) throws ParseException{
         TinyLanguage parser = new TinyLanguage(System.in);
         parser.Prog();
+    }
+    private static void printState(){
+        System.out.println("Current State");
+        for(String s : variables.keySet()){
+            System.out.print(s);
+            System.out.print(": ");
+            System.out.println(variables.get(s));
+        }
     }
 }
 PARSER_END(TinyLanguage)
@@ -48,20 +57,24 @@ void Prog():
 void Com():
 {}
 {
+//print state after every command
     /*<SK>
     |<VAR><ASSIGN>AEXP()
     |<IF>BEXP()<THEN>Com()<ELSE>Com()
     |<WHILE>BEXP()<DO>Com()
     [<SEMICOLON>Com()]//<EOF>*/
-    SimpleCom()[<SEMICOLON>Com()]
-    |CompoundCom()
+    SimpleCom(){printState();}[<SEMICOLON>Com(){printState();}]
+    |CompoundCom(){printState();}
 }
 
 void SimpleCom():
-{}
+{
+    int val;
+    String var;
+}
 {
     <SK>
-    |<VAR><ASSIGN>AEXP()
+    |<VAR>{var = token.image;}<ASSIGN>val=AEXP(){variables.put(var,val);}
 }
 
 void CompoundCom():
@@ -72,25 +85,42 @@ void CompoundCom():
     Com()
 }
 
-void AEXP():
-{}
+int AEXP():
 {
-    <NUM>
-    |<VAR>
-    |<OPPAR>AEXP()(<PLUS>|<MINUS>)AEXP()<CLOSPAR>
+    int val1, val2;
+    String operand;
+}
+{
+    <NUM>{return Integer.parseInt(token.image);}
+    |<VAR>{
+            if(variables.containsKey(token.image))
+                return variables.get(token.image);
+            else
+                throw new ParseException("Variable not defined");
+            }
+    |<OPPAR>val1 = AEXP()(<PLUS>|<MINUS>){operand = token.image;}val2 = AEXP()<CLOSPAR>
+        {
+            if(operand.equals("+"))
+                return val1 + val2;
+            else
+                return val1 - val2;
+        }
 }
 
-void BEXP():
-{}
+boolean BEXP():
 {
-    <TRUE>
-    |<FALSE>
+    int intval1, intval2;
+    boolean boolval1, boolval2;
+}
+{
+    <TRUE>{return true;}
+    |<FALSE>{return false;}
     |<OPPAR>//the following works good because BEXP is not a subset of AEXP. That is,
         //if the next token is an AEXP then we can be sure (if the statement is
         // syntactically correct) that no BEXP can come after
             (LOOKAHEAD(AEXP()/*<EQUALS>AEXP()<CLOSPAR>(<THEN>|<WHILE>)*/)
-            AEXP()<EQUALS>AEXP()
-            |BEXP()<AND>BEXP())
+            intval1 = AEXP() <EQUALS> intval2 = AEXP(){return intval1 == intval2;}
+            |boolval1 = BEXP()<AND> boolval2 = BEXP(){return boolval1 && boolval2;})
      <CLOSPAR>
-    |<NOT>BEXP()
+    |<NOT>boolval1 = BEXP(){return !boolval1;}
 }

@@ -6,8 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Assginment1" />
         <module name="Assignment1" />
+        <module name="Paradigms-Assignment1" />
+        <module name="Assginment1" />
       </profile>
     </annotationProcessing>
   </component>

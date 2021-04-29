@@ -1,0 +1,108 @@
+options {
+    MULTI = true;
+    VISITOR = true;
+    JDK_VERSION = "13";
+}
+
+PARSER_BEGIN(TinyLanguage)
+package tiny;
+import java.util.HashMap;
+public class TinyLanguage {
+    public static void main(String[] args) throws ParseException{
+        TinyLanguage parser = new TinyLanguage(System.in);
+        SimpleNode e = parser.Prog();
+        //e.dump("");
+    }
+}
+
+PARSER_END(TinyLanguage)
+
+SKIP : {
+    " "/*|"\n"*/|"\r" //I've put \n in the end of Prog just for testing purpses
+    //feel free to uncomment it
+}
+
+TOKEN : {
+    <#DIGIT:["0"-"9"]>
+    |<#LETTER:["a"-"f"]>
+    |<NUM:(<DIGIT>)+>
+    |<FALSE:"ff">
+    |<VAR:(<LETTER>)+>
+    |<TRUE:"tt">
+    |<#PLUS:"+">
+    |<#MINUS:"-">
+    |<ARTHOPRND:<PLUS>|<MINUS>>
+    |<IF:"if">
+    |<THEN:"then">
+    |<ELSE:"else">
+    |<EQUALS:"==">
+    |<NOT:"!">
+    |<AND:"^">
+    |<ASSIGN:":=">
+    |<SEMICOLON:";">
+    |<WHILE:"while">
+    |<DO:"do">
+    |<SK:"skip">
+    |<OPPAR:"(">
+    |<CLOSPAR:")">
+}
+
+SimpleNode Prog():
+{}
+{
+    Com()("\n"|<EOF>){return jjtThis;}
+}
+
+void Com():
+{}
+{
+//print state after every command
+    SimpleCom()/*{printState();}*/[<SEMICOLON>Com()/*{printState();}*/]
+    |CompoundCom()/*{printState();}*/
+}
+
+void SimpleCom():
+{
+    Token t;
+}
+{
+    <SK>{jjtThis.value = new NodeInfo(token.kind,null);}
+    |t=<VAR><ASSIGN>{jjtThis.value = new NodeInfo(token.kind,t.image);}AEXP()
+}
+
+void CompoundCom():
+{
+    Token t;
+}
+{
+    (t=<IF>BEXP()<THEN>Com()<ELSE>
+        |t=<WHILE>BEXP()<DO>)
+    Com(){jjtThis.value = t.kind;}
+}
+
+void AEXP():
+{}
+{
+    <NUM>{jjtThis.value = new NodeInfo(token.kind, token.image);}
+    //if we're parsing a variable within an AEXP, then it is being read not assigned
+    |<VAR>{jjtThis.value = new NodeInfo(token.kind, token.image);}
+    |<OPPAR>AEXP()<ARTHOPRND>{jjtThis.value = new NodeInfo(token.kind,token.image);}AEXP()<CLOSPAR>
+}
+
+void BEXP():
+{
+    Token t;
+}
+{
+    (t=<TRUE>
+    |t=<FALSE>
+    |<OPPAR>//the following works good because BEXP is not a subset of AEXP. That is,
+        //if the next token is an AEXP then we can be sure (if the statement is
+        // syntactically correct) that no BEXP can come after
+            (LOOKAHEAD(AEXP())
+             AEXP() t=<EQUALS>AEXP()
+            |BEXP()t=<AND> BEXP())
+     <CLOSPAR>
+    |t=<NOT>BEXP())
+    {jjtThis.value = t.kind;}
+}

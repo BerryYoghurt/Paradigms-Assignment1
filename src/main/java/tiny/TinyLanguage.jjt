@@ -56,7 +56,8 @@ TOKEN : {
 SimpleNode Prog():
 {}
 {
-    Com()("\n"|<EOF>){return jjtThis;}
+    Com()("\n"|<EOF>)
+    {return jjtThis;}
 }
 
 int Com():
@@ -92,7 +93,7 @@ int AEXP():
     (<NUM>
     //if we're parsing a variable within an AEXP, then it is being read not assigned
     |<VAR>){jjtThis.value = new NodeInfo(token.kind, token.image);return ++AExps;}
-    |<OPPAR>AEXP()<ARTHOPRND>{jjtThis.value = new NodeInfo(token.kind,token.image);return ++AExps;}AEXP()<CLOSPAR>
+    |<OPPAR>AEXP()<ARTHOPRND>{jjtThis.value = new NodeInfo(token.kind,token.image);}AEXP()<CLOSPAR>{return ++AExps;}
 }
 
 int BEXP():

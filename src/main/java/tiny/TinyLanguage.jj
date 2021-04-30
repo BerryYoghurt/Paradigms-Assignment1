@@ -67,11 +67,12 @@ SimpleNode Prog():
     try {
 /*@egen*/
     Com()("\n"|<EOF>)/*@bgen(jjtree)*/
-                     {
-                       jjtree.closeNodeScope(jjtn000, true);
-                       jjtc000 = false;
-                     }
-/*@egen*/{return jjtn000;}/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {return jjtn000;}/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -231,7 +232,12 @@ int AEXP():
              jjtc000 = false;
            }
 /*@egen*/{jjtn000.value = new NodeInfo(token.kind, token.image);return ++AExps;}
-    |<OPPAR>AEXP()<ARTHOPRND>{jjtn000.value = new NodeInfo(token.kind,token.image);return ++AExps;}AEXP()<CLOSPAR>/*@bgen(jjtree)*/
+    |<OPPAR>AEXP()<ARTHOPRND>{jjtn000.value = new NodeInfo(token.kind,token.image);}AEXP()<CLOSPAR>/*@bgen(jjtree)*/
+                                                                                                   {
+                                                                                                     jjtree.closeNodeScope(jjtn000, true);
+                                                                                                     jjtc000 = false;
+                                                                                                   }
+/*@egen*/{return ++AExps;}/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);

@@ -36,7 +36,7 @@ public class TinyLanguage/*@bgen(jjtree)*/implements TinyLanguageTreeConstants, 
         throw new ParseException();
       }
 jjtree.closeNodeScope(jjtn000, true);
-                       jjtc000 = false;
+      jjtc000 = false;
 {if ("" != null) return jjtn000;}
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -243,9 +243,12 @@ jjtn000.value = new NodeInfo(token.kind, token.image);{if ("" != null) return ++
         jj_consume_token(OPPAR);
         AEXP();
         jj_consume_token(ARTHOPRND);
-jjtn000.value = new NodeInfo(token.kind,token.image);{if ("" != null) return ++AExps;}
+jjtn000.value = new NodeInfo(token.kind,token.image);
         AEXP();
         jj_consume_token(CLOSPAR);
+jjtree.closeNodeScope(jjtn000, true);
+                                                                                                     jjtc000 = false;
+{if ("" != null) return ++AExps;}
         break;
         }
       default:
@@ -359,7 +362,7 @@ if (jjtc000) {
     finally { jj_save(0, xla); }
   }
 
-  static private boolean jj_3R_AEXP_92_5_2()
+  static private boolean jj_3R_AEXP_93_5_2()
  {
     Token xsp;
     xsp = jj_scanpos;
@@ -370,30 +373,30 @@ if (jjtc000) {
     return false;
   }
 
-  static private boolean jj_3R_AEXP_92_5_1()
+  static private boolean jj_3R_AEXP_93_5_1()
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_AEXP_92_5_2()) {
+    if (jj_3R_AEXP_93_5_2()) {
     jj_scanpos = xsp;
-    if (jj_3R_AEXP_95_6_3()) return true;
+    if (jj_3R_AEXP_96_6_3()) return true;
     }
     return false;
   }
 
-  static private boolean jj_3R_AEXP_95_6_3()
+  static private boolean jj_3R_AEXP_96_6_3()
  {
     if (jj_scan_token(OPPAR)) return true;
-    if (jj_3R_AEXP_92_5_1()) return true;
+    if (jj_3R_AEXP_93_5_1()) return true;
     if (jj_scan_token(ARTHOPRND)) return true;
-    if (jj_3R_AEXP_92_5_1()) return true;
+    if (jj_3R_AEXP_93_5_1()) return true;
     if (jj_scan_token(CLOSPAR)) return true;
     return false;
   }
 
   static private boolean jj_3_1()
  {
-    if (jj_3R_AEXP_92_5_1()) return true;
+    if (jj_3R_AEXP_93_5_1()) return true;
     return false;
   }
 

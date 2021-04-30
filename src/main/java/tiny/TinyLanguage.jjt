@@ -8,6 +8,12 @@ PARSER_BEGIN(TinyLanguage)
 package tiny;
 import java.util.HashMap;
 public class TinyLanguage {
+     static int commands = 0,BExps = 0,AExps = 0;
+
+        // resetting static variables
+         static public void Reset() {
+            commands = BExps = AExps= 0;
+        }
     public static void main(String[] args) throws ParseException{
         TinyLanguage parser = new TinyLanguage(System.in);
         SimpleNode e = parser.Prog();
@@ -53,12 +59,12 @@ SimpleNode Prog():
     Com()("\n"|<EOF>){return jjtThis;}
 }
 
-void Com():
+int Com():
 {}
 {
 //print state after every command
-    SimpleCom()/*{printState();}*/[<SEMICOLON>Com()/*{printState();}*/]
-    |CompoundCom()/*{printState();}*/
+    (SimpleCom()/*{printState();}*/[<SEMICOLON>Com()/*{printState();}*/]
+    |CompoundCom()/*{printState();}*/){return ++commands;}
 }
 
 void SimpleCom():
@@ -80,16 +86,16 @@ void CompoundCom():
     Com(){jjtThis.value = t.kind;}
 }
 
-void AEXP():
+int AEXP():
 {}
 {
-    <NUM>{jjtThis.value = new NodeInfo(token.kind, token.image);}
+    (<NUM>
     //if we're parsing a variable within an AEXP, then it is being read not assigned
-    |<VAR>{jjtThis.value = new NodeInfo(token.kind, token.image);}
-    |<OPPAR>AEXP()<ARTHOPRND>{jjtThis.value = new NodeInfo(token.kind,token.image);}AEXP()<CLOSPAR>
+    |<VAR>){jjtThis.value = new NodeInfo(token.kind, token.image);return ++AExps;}
+    |<OPPAR>AEXP()<ARTHOPRND>{jjtThis.value = new NodeInfo(token.kind,token.image);return ++AExps;}AEXP()<CLOSPAR>
 }
 
-void BEXP():
+int BEXP():
 {
     Token t;
 }
@@ -104,5 +110,6 @@ void BEXP():
             |BEXP()t=<AND> BEXP())
      <CLOSPAR>
     |t=<NOT>BEXP())
-    {jjtThis.value = t.kind;}
+    {jjtThis.value = t.kind;
+    return ++BExps;}
 }

@@ -34,6 +34,6 @@ interface Node {
   public int getId();
 
   /** Accept the visitor. **/
-  public Object jjtAccept(TinyLanguageVisitor visitor, Object data);
+  public Object jjtAccept(TinyLanguageVisitor visitor, Object data) throws SemanticException, ParseException;
 }
 /* JavaCC - OriginalChecksum=bd5b061c4d07524109ef6d25fb440d85 (do not edit this line) */

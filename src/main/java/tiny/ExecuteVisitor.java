@@ -6,11 +6,11 @@ import java.util.Map;
 /**data has to be of type map**/
 public class ExecuteVisitor extends TinyLanguageDefaultVisitor{
     @Override
-    public Object visit(ASTAEXP node, Object data){
+    public Object visit(ASTAEXP node, Object data) throws ParseException, SemanticException {
         NodeInfo info = (NodeInfo) node.value;
         String value = (String) info.value;
         Map<String, Integer> map = (Map<String, Integer>)data;
-        try {
+
             switch (info.type) {
                 case TinyLanguageConstants.NUM:
                     return Integer.parseInt(value);
@@ -35,16 +35,11 @@ public class ExecuteVisitor extends TinyLanguageDefaultVisitor{
                 default:
                     throw new ParseException("Parse exception should not happen");
             }
-        }catch (SemanticException | ParseException e){
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
-    public Object visit(ASTBEXP node, Object data){
+    public Object visit(ASTBEXP node, Object data) throws ParseException, SemanticException {
         Integer kind = (Integer) node.value;
-        try{
             switch (kind){
                 case TinyLanguageConstants.TRUE:
                     return true;
@@ -67,17 +62,14 @@ public class ExecuteVisitor extends TinyLanguageDefaultVisitor{
                         throw new ParseException("Parse error during semantic analysis should not happen");
                     return !(Boolean)node.jjtGetChild(0).jjtAccept(this,data);
             }
-        }catch (ParseException e) {
-            e.printStackTrace();
-        }
+
         return null;
     }
 
     @Override
-    public Object visit(ASTCompoundCom node, Object data) {
+    public Object visit(ASTCompoundCom node, Object data) throws SemanticException, ParseException {
         int kind = (Integer)node.value;
         boolean bool = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        try {
             switch (kind) {
                 case TinyLanguageConstants.IF:
                     if (bool) {
@@ -93,17 +85,12 @@ public class ExecuteVisitor extends TinyLanguageDefaultVisitor{
                 default:
                     throw new ParseException("Ugh");
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
-    public Object visit(ASTSimpleCom node, Object data){
+    public Object visit(ASTSimpleCom node, Object data) throws SemanticException, ParseException {
         NodeInfo info = (NodeInfo)node.value;
         Map<String, Integer> map = (Map<String,Integer>)data;
-        try{
             switch (info.type) {
                 case TinyLanguageConstants.SK:
                     return null;
@@ -114,14 +101,10 @@ public class ExecuteVisitor extends TinyLanguageDefaultVisitor{
                 default:
                     throw new ParseException("ughhh");
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
-    public Object visit(ASTProg node, Object data){
+    public Object visit(ASTProg node, Object data) throws SemanticException, ParseException {
         defaultVisit(node, data);
         Map<String, Integer> map = (Map<String, Integer>) data;
         System.out.println("Current State");

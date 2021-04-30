@@ -2,29 +2,29 @@
 package tiny;
 
 public class TinyLanguageDefaultVisitor implements TinyLanguageVisitor{
-  public Object defaultVisit(SimpleNode node, Object data){
+  public Object defaultVisit(SimpleNode node, Object data) throws SemanticException, ParseException {
     node.childrenAccept(this, data);
     return data;
   }
-  public Object visit(SimpleNode node, Object data){
+  public Object visit(SimpleNode node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTProg node, Object data){
+  public Object visit(ASTProg node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTCom node, Object data){
+  public Object visit(ASTCom node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTSimpleCom node, Object data){
+  public Object visit(ASTSimpleCom node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTCompoundCom node, Object data){
+  public Object visit(ASTCompoundCom node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTAEXP node, Object data){
+  public Object visit(ASTAEXP node, Object data) throws ParseException, SemanticException {
     return defaultVisit(node, data);
   }
-  public Object visit(ASTBEXP node, Object data){
+  public Object visit(ASTBEXP node, Object data) throws SemanticException, ParseException {
     return defaultVisit(node, data);
   }
 }

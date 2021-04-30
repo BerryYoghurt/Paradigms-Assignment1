@@ -72,7 +72,7 @@ public class TinyLanguageTest {
 
 
     @Test
-    public void commandAssignment() throws ParseException {
+    public void commandAssignment() throws ParseException, SemanticException {
         code = "a:=8;b:=(90+75)";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();
@@ -81,7 +81,7 @@ public class TinyLanguageTest {
     }
 
     @Test
-    public void testWhile() throws ParseException {
+    public void testWhile() throws ParseException, SemanticException {
         code ="f:=5;while (!(f==10)^tt) do f:=(f+1)";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();
@@ -89,7 +89,7 @@ public class TinyLanguageTest {
         assertEquals(currentState(new String[]{"f"},new int[]{10}), outContent.toString());
     }
     @Test
-    public void testIF() throws ParseException {
+    public void testIF() throws ParseException, SemanticException {
         code ="b:=8;a:=8;if !(b==8) then while !(a==0) do a:=(a-1) else if(a == b) then a:=9 else skip";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();
@@ -99,7 +99,7 @@ public class TinyLanguageTest {
     }
 
     @Test
-    public void whileIf() throws ParseException {
+    public void whileIf() throws ParseException, SemanticException {
         code ="b:=5;a:=8;if !(b==8) then while !(a==0) do a:=(a-1) else if(a == b) then a:=9 else skip";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();
@@ -108,7 +108,7 @@ public class TinyLanguageTest {
     }
 
     @Test
-    public void commands() throws ParseException {
+    public void commands() throws ParseException, SemanticException {
         code ="a:=4; b:=6; c:=1; if ((a + 5) == (b + 6)) then c:=0 else skip";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();
@@ -145,7 +145,7 @@ public class TinyLanguageTest {
     }
 
     @Test(expected = SemanticException.class)
-    public void undefinedVariable() throws ParseException {
+    public void undefinedVariable() throws ParseException, SemanticException {
         code ="while tt do a:=(a-1)";
         TinyLanguage.ReInit(new StringReader(code));
         SimpleNode e = TinyLanguage.Prog();

@@ -14,7 +14,7 @@ class ASTBEXP extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(TinyLanguageVisitor visitor, Object data) {
+  public Object jjtAccept(TinyLanguageVisitor visitor, Object data) throws SemanticException, ParseException {
 
     return
     visitor.visit(this, data);
